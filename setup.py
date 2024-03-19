@@ -347,7 +347,7 @@ if POSIX:
             # See https://serverfault.com/q/524883
             # for an explanation of Solaris /etc/release
             with open('/etc/release') as f:
-                update = re.search(r'(?<=s10s_u)[0-9]{1,2}', f.readline())
+                update = re.search(r'(?<=s10s_u)[0-9]{1,2}', f.readline(5_000_000))
                 return int(update.group(0)) if update else 0
 
         posix_extension.libraries.append('socket')
