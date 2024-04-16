@@ -867,7 +867,7 @@ def get_testfn(suffix="", dir=None):
     not really due to the time variant.
     """
     while True:
-        name = tempfile.mktemp(prefix=TESTFN_PREFIX, suffix=suffix, dir=dir)
+        name = tempfile.mkstemp(prefix=TESTFN_PREFIX, suffix=suffix, dir=dir)
         if not os.path.exists(name):  # also include dirs
             return os.path.realpath(name)  # needed for OSX
 
