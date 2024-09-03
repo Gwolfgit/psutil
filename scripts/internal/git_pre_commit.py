@@ -16,6 +16,7 @@ import os
 import shlex
 import subprocess
 import sys
+from security import safe_command
 
 
 PYTHON = sys.executable
@@ -58,8 +59,7 @@ def exit(msg):
 def sh(cmd):
     if isinstance(cmd, str):
         cmd = shlex.split(cmd)
-    p = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    p = safe_command.run(subprocess.Popen, cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         universal_newlines=True
     )
     stdout, stderr = p.communicate()
@@ -99,7 +99,7 @@ def git_commit_files():
 def ruff(files):
     print("running ruff (%s)" % len(files))
     cmd = [PYTHON, "-m", "ruff", "check", "--no-cache"] + files
-    if subprocess.call(cmd) != 0:
+    if safe_command.run(subprocess.call, cmd) != 0:
         return exit(
             "Python code didn't pass 'ruff' style check."
             "Try running 'make fix-ruff'."
@@ -110,21 +110,21 @@ def c_linter(files):
     print("running clinter (%s)" % len(files))
     # XXX: we should escape spaces and possibly other amenities here
     cmd = [PYTHON, "scripts/internal/clinter.py"] + files
-    if subprocess.call(cmd) != 0:
+    if safe_command.run(subprocess.call, cmd) != 0:
         return sys.exit("C code didn't pass style check")
 
 
 def toml_sort(files):
     print("running toml linter (%s)" % len(files))
     cmd = ["toml-sort", "--check"] + files
-    if subprocess.call(cmd) != 0:
+    if safe_command.run(subprocess.call, cmd) != 0:
         return sys.exit("%s didn't pass style check" % ' '.join(files))
 
 
 def rstcheck(files):
     print("running rst linter (%s)" % len(files))
     cmd = ["rstcheck", "--config=pyproject.toml"] + files
-    if subprocess.call(cmd) != 0:
+    if safe_command.run(subprocess.call, cmd) != 0:
         return sys.exit("RST code didn't pass style check")
 
 
