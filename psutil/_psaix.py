@@ -32,6 +32,7 @@ from ._compat import PY3
 from ._compat import FileNotFoundError
 from ._compat import PermissionError
 from ._compat import ProcessLookupError
+from security import safe_command
 
 
 __extra__all__ = ["PROCFS_PATH"]
@@ -145,7 +146,7 @@ def cpu_count_logical():
 
 def cpu_count_cores():
     cmd = ["lsdev", "-Cc", "processor"]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = safe_command.run(subprocess.Popen, cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = p.communicate()
     if PY3:
         stdout, stderr = (x.decode(sys.stdout.encoding)

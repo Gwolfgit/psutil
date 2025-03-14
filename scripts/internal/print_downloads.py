@@ -22,6 +22,7 @@ import sys
 import pypinfo  # NOQA
 
 from psutil._common import memoize
+from security import safe_command
 
 
 AUTH_FILE = os.path.expanduser("~/.pypinfo.json")
@@ -43,7 +44,7 @@ def sh(cmd):
     assert os.path.exists(AUTH_FILE)
     env = os.environ.copy()
     env['GOOGLE_APPLICATION_CREDENTIALS'] = AUTH_FILE
-    p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE,
+    p = safe_command.run(subprocess.Popen, shlex.split(cmd), stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, universal_newlines=True)
     stdout, stderr = p.communicate()
     if p.returncode != 0:

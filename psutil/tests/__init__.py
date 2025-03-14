@@ -58,6 +58,7 @@ from psutil._compat import super
 from psutil._compat import u
 from psutil._compat import unicode
 from psutil._compat import which
+from security import safe_command
 
 
 try:
@@ -372,13 +373,13 @@ def spawn_testproc(cmd=None, **kwds):
                 "sleep(60);"
             )
             cmd = [PYTHON_EXE, "-c", pyline]
-            sproc = subprocess.Popen(cmd, **kwds)
+            sproc = safe_command.run(subprocess.Popen, cmd, **kwds)
             _subprocesses_started.add(sproc)
             wait_for_file(testfn, delete=True, empty=True)
         finally:
             safe_rmpath(testfn)
     else:
-        sproc = subprocess.Popen(cmd, **kwds)
+        sproc = safe_command.run(subprocess.Popen, cmd, **kwds)
         _subprocesses_started.add(sproc)
         wait_for_pid(sproc.pid)
     return sproc
@@ -501,7 +502,7 @@ def sh(cmd, **kwds):
     kwds.setdefault("creationflags", flags)
     if isinstance(cmd, str):
         cmd = shlex.split(cmd)
-    p = subprocess.Popen(cmd, **kwds)
+    p = safe_command.run(subprocess.Popen, cmd, **kwds)
     _subprocesses_started.add(p)
     if PY3:
         stdout, stderr = p.communicate(timeout=GLOBAL_TIMEOUT)
