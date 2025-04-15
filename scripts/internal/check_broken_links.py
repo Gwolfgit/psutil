@@ -175,7 +175,7 @@ def get_urls(fname):
         return parse_c(fname)
     else:
         with open(fname, errors='ignore') as f:
-            if f.readline().strip().startswith('#!/usr/bin/env python3'):
+            if f.readline(5_000_000).strip().startswith('#!/usr/bin/env python3'):
                 return parse_py(fname)
         return parse_generic(fname)
 
