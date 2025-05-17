@@ -17,7 +17,6 @@ import gc
 import inspect
 import os
 import platform
-import random
 import re
 import select
 import shlex
@@ -58,6 +57,7 @@ from psutil._compat import super
 from psutil._compat import u
 from psutil._compat import unicode
 from psutil._compat import which
+import secrets
 
 
 try:
@@ -1301,7 +1301,7 @@ def _get_eligible_cpu():
     if hasattr(p, "cpu_num"):
         return p.cpu_num()
     elif hasattr(p, "cpu_affinity"):
-        return random.choice(p.cpu_affinity())
+        return secrets.choice(p.cpu_affinity())
     return 0
 
 
@@ -1409,7 +1409,7 @@ class process_namespace:
         in random order.
         """
         ls = list(ls)
-        random.shuffle(ls)
+        secrets.SystemRandom().shuffle(ls)
         for fun_name, args, kwds in ls:
             if clear_cache:
                 self.clear_cache()
@@ -1501,7 +1501,7 @@ class system_namespace:
         in random order.
         """
         ls = list(ls)
-        random.shuffle(ls)
+        secrets.SystemRandom().shuffle(ls)
         for fun_name, args, kwds in ls:
             fun = getattr(psutil, fun_name)
             fun = functools.partial(fun, *args, **kwds)
@@ -1852,7 +1852,7 @@ if POSIX:
         libs = [x.path for x in psutil.Process().memory_maps() if
                 os.path.splitext(x.path)[1] == ext and
                 exe in x.path.lower()]
-        src = random.choice(libs)
+        src = secrets.choice(libs)
         shutil.copyfile(src, dst)
         try:
             ctypes.CDLL(dst)
@@ -1878,7 +1878,7 @@ else:
         if PYPY and not libs:
             libs = [x.path for x in psutil.Process().memory_maps() if
                     'pypy' in os.path.basename(x.path).lower()]
-        src = random.choice(libs)
+        src = secrets.choice(libs)
         shutil.copyfile(src, dst)
         cfile = None
         try:
