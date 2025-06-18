@@ -25,6 +25,7 @@ import ssl
 import subprocess
 import sys
 import tempfile
+from security import safe_command
 
 
 APPVEYOR = bool(os.environ.get('APPVEYOR'))
@@ -114,7 +115,7 @@ def win_colorprint(s, color=LIGHTBLUE):
 def sh(cmd, nolog=False):
     if not nolog:
         safe_print("cmd: " + cmd)
-    p = subprocess.Popen(cmd, shell=True, env=os.environ, cwd=os.getcwd())  # noqa
+    p = safe_command.run(subprocess.Popen, cmd, shell=True, env=os.environ, cwd=os.getcwd())  # noqa
     p.communicate()
     if p.returncode != 0:
         sys.exit(p.returncode)
@@ -220,7 +221,7 @@ def build():
     if sys.version_info[:2] >= (3, 6) and (os.cpu_count() or 1) > 1:
         cmd += ['--parallel', str(os.cpu_count())]
     # Print coloured warnings in real time.
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = safe_command.run(subprocess.Popen, cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     try:
         for line in iter(p.stdout.readline, b''):
             if PY3:

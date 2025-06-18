@@ -33,6 +33,7 @@ from ._compat import FileNotFoundError
 from ._compat import PermissionError
 from ._compat import ProcessLookupError
 from ._compat import b
+from security import safe_command
 
 
 __extra__all__ = ["CONN_IDLE", "CONN_BOUND", "PROCFS_PATH"]
@@ -619,7 +620,7 @@ class Process:
         # TODO: rewrite this in C (...but the damn netstat source code
         # does not include this part! Argh!!)
         cmd = ["pfiles", str(pid)]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+        p = safe_command.run(subprocess.Popen, cmd, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         if PY3:
