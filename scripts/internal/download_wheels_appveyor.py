@@ -22,6 +22,7 @@ import requests
 from psutil import __version__
 from psutil._common import bytes2human
 from psutil._common import print_color
+from security import safe_requests
 
 
 USER = "giampaolo"
@@ -36,7 +37,7 @@ def download_file(url):
     local_fname = url.split('/')[-1]
     local_fname = os.path.join('dist', local_fname)
     os.makedirs('dist', exist_ok=True)
-    r = requests.get(url, stream=True, timeout=TIMEOUT)
+    r = safe_requests.get(url, stream=True, timeout=TIMEOUT)
     tot_bytes = 0
     with open(local_fname, 'wb') as f:
         for chunk in r.iter_content(chunk_size=16384):

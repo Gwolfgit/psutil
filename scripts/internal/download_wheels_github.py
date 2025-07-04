@@ -20,11 +20,10 @@ import os
 import sys
 import zipfile
 
-import requests
-
 from psutil import __version__
 from psutil._common import bytes2human
 from psutil.tests import safe_rmpath
+from security import safe_requests
 
 
 USER = "giampaolo"
@@ -38,7 +37,7 @@ TIMEOUT = 30
 def get_artifacts():
     base_url = "https://api.github.com/repos/%s/%s" % (USER, PROJECT)
     url = base_url + "/actions/artifacts"
-    res = requests.get(url=url, headers={
+    res = safe_requests.get(url=url, headers={
                        "Authorization": "token %s" % TOKEN}, timeout=TIMEOUT)
     res.raise_for_status()
     data = json.loads(res.content)
@@ -47,7 +46,7 @@ def get_artifacts():
 
 def download_zip(url):
     print("downloading: " + url)
-    res = requests.get(url=url, headers={
+    res = safe_requests.get(url=url, headers={
                        "Authorization": "token %s" % TOKEN}, timeout=TIMEOUT)
     res.raise_for_status()
     totbytes = 0

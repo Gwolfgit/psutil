@@ -49,6 +49,7 @@ import sys
 import traceback
 
 import requests
+from security import safe_requests
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -190,7 +191,7 @@ def validate_url(url):
         # some websites deny 503, like Microsoft
         # and some send 401, like Apple, observations
         if (not res.ok) and (res.status_code in RETRY_STATUSES):
-            res = requests.get(url, timeout=REQUEST_TIMEOUT)
+            res = safe_requests.get(url, timeout=REQUEST_TIMEOUT)
         return res.ok
     except requests.exceptions.RequestException:
         return False
